@@ -37,13 +37,15 @@ class MainActivity : ComponentActivity() {
 fun ClickerGame() {
     var count by remember { mutableStateOf(0) }
     var increment by remember { mutableStateOf(1) }
-    var shopOpen by remember { mutableStateOf(false) }
+    var ClickerShopOpen by remember { mutableStateOf(false) }
+    var GraphicShopOpen by remember { mutableStateOf(false) }
     var upgradeCost by remember { mutableStateOf(10) }
+    var alignedCenter by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         Column(
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = if (alignedCenter) Alignment.CenterHorizontally else Alignment.Start,
             modifier = Modifier.padding(top = 50.dp)
 
         ) {
@@ -66,7 +68,7 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable { shopOpen = !shopOpen },
+                    .clickable { ClickerShopOpen = !ClickerShopOpen },
                 contentAlignment = Alignment.Center
             ) {
                 Text("Bouton 1")
@@ -78,13 +80,13 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable { /* Action bouton 2 */ },
+                    .clickable { GraphicShopOpen = !GraphicShopOpen },
                 contentAlignment = Alignment.Center
             ) {
                 Text("Bouton 2")
             }
 
-            if (shopOpen) {
+            if (ClickerShopOpen) {
                 ClickerShop(
                     increment = increment,
                     count = count,
@@ -94,6 +96,16 @@ fun ClickerGame() {
                         count = newCount
                         upgradeCost = newupgradeCost
                     }
+                )
+            }
+
+            if (GraphicShopOpen) {
+                GraphicShop(
+                    count = count,
+                    onAlignCenter = { newCount ->
+                        alignedCenter = true
+                        count = newCount
+                    },
                 )
             }
         }

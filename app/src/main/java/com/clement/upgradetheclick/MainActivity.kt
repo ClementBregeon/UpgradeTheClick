@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,11 +36,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ClickerGame() {
     var count by remember { mutableStateOf(0) }
+    var increment by remember { mutableStateOf(1) }
+    var shopOpen by remember { mutableStateOf(false) }
+    var upgradeCost by remember { mutableStateOf(10) }
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.padding(top = 50.dp)
+
+        ) {
             Text(
                 text = "$count",
                 fontSize = 24.sp,
@@ -50,8 +57,45 @@ fun ClickerGame() {
                     .size(300.dp)
                     .border(3.dp, Color.Black)
                     .background(Color.White)
-                    .clickable { count++ },
+                    .clickable { count = count + increment },
             )
+
+            Spacer(modifier = Modifier.padding(top = 30.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(width = 200.dp, height = 60.dp)
+                    .border(2.dp, Color.Black)
+                    .clickable { shopOpen = !shopOpen },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Bouton 1")
+            }
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(width = 200.dp, height = 60.dp)
+                    .border(2.dp, Color.Black)
+                    .clickable { /* Action bouton 2 */ },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Bouton 2")
+            }
+
+            if (shopOpen) {
+                ClickerShop(
+                    increment = increment,
+                    count = count,
+                    upgradeCost = upgradeCost,
+                    onUpgrade = { newIncrement, newCount, newupgradeCost ->
+                        increment = newIncrement
+                        count = newCount
+                        upgradeCost = newupgradeCost
+                    }
+                )
+            }
         }
     }
 

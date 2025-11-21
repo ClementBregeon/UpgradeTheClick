@@ -15,14 +15,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,12 +38,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ClickerGame() {
-    var count by remember { mutableStateOf(0) }
-    var increment by remember { mutableStateOf(1) }
+    var count by remember { mutableIntStateOf(100000) }
+    var increment by remember { mutableIntStateOf(1) }
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
-    var upgradeCost by remember { mutableStateOf(10) }
+    var upgradeCost by remember { mutableIntStateOf(10) }
     var alignedCenter by remember { mutableStateOf(false) }
+    var alignPurchased by remember { mutableStateOf(false) }
+    var squareLevel by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -57,10 +62,24 @@ fun ClickerGame() {
             Box(
                 modifier = Modifier
                     .size(300.dp)
-                    .border(3.dp, Color.Black)
-                    .background(Color.White)
-                    .clickable { count = count + increment },
-            )
+                    .clickable { count += increment },
+                contentAlignment = Alignment.Center
+            ) {
+                when (squareLevel) {
+                    0 -> Box(modifier = Modifier.fillMaxSize().border(3.dp, Color.Black).background(Color.White))
+                    1 -> Box(modifier = Modifier.fillMaxSize().border(3.dp, Color.Black).background(Color.Yellow))
+                    2 -> Image(
+                        painter = painterResource(R.drawable.pixel_cookie),
+                        contentDescription = "Pixel Cookie",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    3 -> Image(
+                        painter = painterResource(R.drawable.real_cookie),
+                        contentDescription = "Real Cookie",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.padding(top = 30.dp))
 
@@ -102,11 +121,17 @@ fun ClickerGame() {
             if (GraphicShopOpen) {
                 GraphicShop(
                     count = count,
+                    alignPurchased = alignPurchased,
+                    squareLevel = squareLevel,
                     onAlignCenter = { newCount ->
                         alignedCenter = true
                         count = newCount
+                        alignPurchased = true
                     },
-                )
+                    onUpgradeSquare = { newCount, newLevel ->
+                        count = newCount
+                        squareLevel = newLevel
+                    })
             }
         }
     }

@@ -6,14 +6,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GraphicShop( count: Int, onAlignCenter:  (newCount: Int) -> Unit) {
+fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int,
+                 onAlignCenter:  (newCount: Int) -> Unit,
+                 onUpgradeSquare: (newCount: Int, newLevel: Int) -> Unit) {
     val alignCost = 1000
+    val upgradeCosts = listOf(5000, 10000, 15000)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -28,17 +35,41 @@ fun GraphicShop( count: Int, onAlignCenter:  (newCount: Int) -> Unit) {
                 .border(3.dp, Color.Black)
                 .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(width = 150.dp, height = 50.dp)
-                    .border(2.dp, Color.Black)
-                    .background(Color.LightGray)
-                    .clickable { if (count >= alignCost) {
-                        onAlignCenter(count - alignCost)
-                    } },
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Réaligner le layout")
+            if (!alignPurchased) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 150.dp, height = 50.dp)
+                        .border(2.dp, Color.Black)
+                        .background(Color.LightGray)
+                        .clickable {
+                            if (count >= alignCost) {
+                                onAlignCenter(count - alignCost)
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Réaligner : $alignCost")
+                }
+            }
+
+            if (squareLevel < 3) {
+                val cost = upgradeCosts[squareLevel]
+                Box(
+                    modifier = Modifier
+                        .size(width = 180.dp, height = 50.dp)
+                        .border(2.dp, Color.Black)
+                        .background(Color.LightGray)
+                        .clickable {
+                            if (count >= cost) {
+                                onUpgradeSquare(count - cost, squareLevel + 1)
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Améliorer carré : $cost")
+                }
+            } else {
+                Text("Carré max amélioré")
             }
         }
     }

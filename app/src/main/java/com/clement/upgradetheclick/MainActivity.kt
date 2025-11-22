@@ -46,11 +46,13 @@ fun ClickerGame() {
     var alignedCenter by remember { mutableStateOf(false) }
     var alignPurchased by remember { mutableStateOf(false) }
     var squareLevel by remember { mutableStateOf(0) }
+    var GraphicMenuLevel by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier.fillMaxSize(),
+        contentAlignment = if (alignedCenter) Alignment.TopCenter else Alignment.TopStart
     ) {
         Column(
-            horizontalAlignment = if (alignedCenter) Alignment.CenterHorizontally else Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(top = 50.dp)
 
         ) {
@@ -87,7 +89,9 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable { ClickerShopOpen = !ClickerShopOpen },
+                    .clickable {
+                        ClickerShopOpen = !ClickerShopOpen
+                        GraphicShopOpen = false },
                 contentAlignment = Alignment.Center
             ) {
                 Text("Bouton 1")
@@ -99,7 +103,9 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable { GraphicShopOpen = !GraphicShopOpen },
+                    .clickable {
+                        GraphicShopOpen = !GraphicShopOpen
+                        ClickerShopOpen = false },
                 contentAlignment = Alignment.Center
             ) {
                 Text("Bouton 2")
@@ -123,6 +129,7 @@ fun ClickerGame() {
                     count = count,
                     alignPurchased = alignPurchased,
                     squareLevel = squareLevel,
+                    GraphicMenuLevel = GraphicMenuLevel,
                     onAlignCenter = { newCount ->
                         alignedCenter = true
                         count = newCount
@@ -131,7 +138,12 @@ fun ClickerGame() {
                     onUpgradeSquare = { newCount, newLevel ->
                         count = newCount
                         squareLevel = newLevel
-                    })
+                    },
+                    onUpgradeMenu = { newCount, newMenuLevel ->
+                        count = newCount
+                        GraphicMenuLevel = newMenuLevel
+                    }
+                )
             }
         }
     }

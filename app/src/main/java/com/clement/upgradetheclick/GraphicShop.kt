@@ -2,7 +2,6 @@ package com.clement.upgradetheclick
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,15 +11,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicMenuLevel: Int,
+fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicShopLevel: Int, ClickerShopLevel: Int,
                  onAlignCenter:  (newCount: Int) -> Unit,
                  onUpgradeSquare: (newCount: Int, newLevel: Int) -> Unit,
-                 onUpgradeMenu: (newCount: Int, newMenuLevel: Int) -> Unit) {
+                 onUpgradeGraphicShop: (newCount: Int, newGraphicShopLevel: Int) -> Unit,
+                 onUpgradeClickerShop: (newCount: Int, newClickerShopLevel: Int) -> Unit) {
     val alignCost = 1000
     val upgradeCosts = listOf(5000, 10000, 15000)
-    val GraphicMenuCosts = listOf(2000, 5000)
+    val GraphicShopCosts = listOf(2000, 5000)
+    val ClickerShopCosts = listOf(1500, 4000)
 
-    val GraphicMenuModifier = when (GraphicMenuLevel) {
+    val GraphicShopModifier = when (GraphicShopLevel) {
         0 -> Modifier
             .size(300.dp, 260.dp)
             .background(Color.White)
@@ -32,7 +33,7 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
             .padding(8.dp)
         else -> Modifier
             .fillMaxSize()
-            .background(Color(0xFFEFEFEF))
+            .background(Color.White)
             .padding(16.dp)
     }
     Box(
@@ -42,11 +43,11 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
                 .background(Color(0x88000000)),
             contentAlignment = Alignment.Center
     ) {
-        when (GraphicMenuLevel) {
+            when (GraphicShopLevel) {
             0 -> {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = GraphicMenuModifier,
+                    modifier = GraphicShopModifier,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (!alignPurchased) {
@@ -62,15 +63,23 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
                     } else {
                         Text("Carré max amélioré")
                     }
-                    val graphicMenuCost = GraphicMenuCosts[GraphicMenuLevel]
-                    ShopButton("Améliorer menu : $graphicMenuCost") {
-                        if (count >= graphicMenuCost) onUpgradeMenu(count - graphicMenuCost, GraphicMenuLevel + 1)
+                    val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
+                    if (GraphicShopCost != null) {
+                        ShopButton("Améliorer menu graphique : $GraphicShopCost") {
+                            if (count >= GraphicShopCost) onUpgradeGraphicShop(count - GraphicShopCost, GraphicShopLevel + 1)
+                        }
+                    }
+                    val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
+                    if (ClickerShopCost != null) {
+                        ShopButton("Améliorer menu clicker : $ClickerShopCost") {
+                            if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
+                        }
                     }
                 }
             }
             1 -> {
                 Column(
-                    modifier = GraphicMenuModifier.fillMaxHeight(),
+                    modifier = GraphicShopModifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -90,16 +99,27 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val graphicMenuCost = GraphicMenuCosts[GraphicMenuLevel]
-                        ShopButton("Améliorer menu : $graphicMenuCost") {
-                            if (count >= graphicMenuCost) onUpgradeMenu(count - graphicMenuCost, GraphicMenuLevel + 1)
+                        val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
+                        if (GraphicShopCost != null) {
+                            ShopButton("Améliorer menu graphique : $GraphicShopCost") {
+                                if (count >= GraphicShopCost) onUpgradeGraphicShop(count - GraphicShopCost, GraphicShopLevel + 1)
+                            }
                         }
+
+
+                        val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
+                        if (ClickerShopCost != null) {
+                            ShopButton("Améliorer menu clicker : $ClickerShopCost") {
+                                if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
+                            }
+                        }
+
                     }
                 }
             }
             else -> {
                 Column(
-                    modifier = GraphicMenuModifier.fillMaxHeight(),
+                    modifier = GraphicShopModifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -120,10 +140,17 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val graphicMenuCost = GraphicMenuCosts.getOrNull(GraphicMenuLevel)
-                        if (graphicMenuCost != null) {
-                            ShopButtonModern("Améliorer menu : $graphicMenuCost") {
-                                if (count >= graphicMenuCost) onUpgradeMenu(graphicMenuCost, GraphicMenuLevel + 1)
+                        val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
+                        if (GraphicShopCost != null) {
+                            ShopButtonModern("Améliorer menu graphique : $GraphicShopCost") {
+                                if (count >= GraphicShopCost) onUpgradeGraphicShop(count - GraphicShopCost, GraphicShopLevel + 1)
+                            }
+                        }
+
+                        val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
+                        if (ClickerShopCost != null) {
+                            ShopButtonModern("Améliorer menu clicker : $ClickerShopCost") {
+                                if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
                             }
                         }
                     }
@@ -135,31 +162,3 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicM
 }
 
 
-@Composable
-fun ShopButton(text: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(width = 180.dp, height = 50.dp)
-            .border(2.dp, Color.Black)
-            .background(Color.LightGray)
-            .clickable{onClick()},
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text)
-    }
-}
-
-@Composable
-fun ShopButtonModern(text: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(width = 180.dp, height = 50.dp)
-            .border(1.dp, Color.Gray)
-            .background(Color.White)
-            .clickable { onClick() }
-            .padding(4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text, color = Color.DarkGray)
-    }
-}

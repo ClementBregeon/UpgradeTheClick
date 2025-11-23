@@ -46,13 +46,13 @@ fun ClickerGame() {
     var alignedCenter by remember { mutableStateOf(false) }
     var alignPurchased by remember { mutableStateOf(false) }
     var squareLevel by remember { mutableStateOf(0) }
-    var GraphicMenuLevel by remember { mutableStateOf(0) }
+    var GraphicShopLevel by remember { mutableStateOf(0) }
+    var ClickerShopLevel by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = if (alignedCenter) Alignment.TopCenter else Alignment.TopStart
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = if (alignedCenter) Alignment.CenterHorizontally else Alignment.Start,
             modifier = Modifier.padding(top = 50.dp)
 
         ) {
@@ -89,12 +89,11 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable {
-                        ClickerShopOpen = !ClickerShopOpen
-                        GraphicShopOpen = false },
+                    .clickable { ClickerShopOpen = !ClickerShopOpen
+                               GraphicShopOpen = false},
                 contentAlignment = Alignment.Center
             ) {
-                Text("Bouton 1")
+                Text("Shop Clicker")
             }
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -103,12 +102,11 @@ fun ClickerGame() {
                 modifier = Modifier
                     .size(width = 200.dp, height = 60.dp)
                     .border(2.dp, Color.Black)
-                    .clickable {
-                        GraphicShopOpen = !GraphicShopOpen
-                        ClickerShopOpen = false },
+                    .clickable { GraphicShopOpen = !GraphicShopOpen
+                        ClickerShopOpen = false},
                 contentAlignment = Alignment.Center
             ) {
-                Text("Bouton 2")
+                Text("Shop Graphique")
             }
 
             if (ClickerShopOpen) {
@@ -116,10 +114,11 @@ fun ClickerGame() {
                     increment = increment,
                     count = count,
                     upgradeCost = upgradeCost,
-                    onUpgrade = { newIncrement, newCount, newupgradeCost ->
+                    ClickerShopLevel = ClickerShopLevel,
+                    onUpgrade = { newIncrement, newCount, newUpgradeCost ->
                         increment = newIncrement
                         count = newCount
-                        upgradeCost = newupgradeCost
+                        upgradeCost = newUpgradeCost
                     }
                 )
             }
@@ -129,7 +128,8 @@ fun ClickerGame() {
                     count = count,
                     alignPurchased = alignPurchased,
                     squareLevel = squareLevel,
-                    GraphicMenuLevel = GraphicMenuLevel,
+                    GraphicShopLevel = GraphicShopLevel,
+                    ClickerShopLevel = ClickerShopLevel,
                     onAlignCenter = { newCount ->
                         alignedCenter = true
                         count = newCount
@@ -138,14 +138,47 @@ fun ClickerGame() {
                     onUpgradeSquare = { newCount, newLevel ->
                         count = newCount
                         squareLevel = newLevel
-                    },
-                    onUpgradeMenu = { newCount, newMenuLevel ->
+                    } ,
+                    onUpgradeGraphicShop = { newCount, newGraphicShopLevel ->
                         count = newCount
-                        GraphicMenuLevel = newMenuLevel
-                    }
-                )
+                        GraphicShopLevel = newGraphicShopLevel
+                    },
+                    onUpgradeClickerShop = { newCount, newClickerShopLevel ->
+                        count = newCount
+                        ClickerShopLevel = newClickerShopLevel
+                    })
             }
         }
     }
 
+}
+
+
+@Composable
+fun ShopButton(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(width = 180.dp, height = 50.dp)
+            .border(2.dp, Color.Black)
+            .background(Color.LightGray)
+            .clickable{onClick()},
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text)
+    }
+}
+
+@Composable
+fun ShopButtonModern(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(width = 180.dp, height = 50.dp)
+            .border(1.dp, Color.Gray)
+            .background(Color.White)
+            .clickable { onClick() }
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = Color.DarkGray)
+    }
 }

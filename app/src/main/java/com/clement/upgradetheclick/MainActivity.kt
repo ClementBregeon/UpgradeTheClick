@@ -26,6 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun ClickerGame() {
     var count by remember { mutableIntStateOf(100000) }
@@ -43,11 +46,22 @@ fun ClickerGame() {
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
     var upgradeCost by remember { mutableIntStateOf(10) }
+    var perSecondIncrement by remember { mutableIntStateOf(0) }
+    var perSecondCost1 by remember { mutableIntStateOf(50) }
+    var perSecondCost10 by remember { mutableIntStateOf(500) }
+    var perSecondCost100 by remember { mutableIntStateOf(5000) }
     var alignedCenter by remember { mutableStateOf(false) }
     var alignPurchased by remember { mutableStateOf(false) }
     var squareLevel by remember { mutableStateOf(0) }
     var GraphicShopLevel by remember { mutableStateOf(0) }
     var ClickerShopLevel by remember { mutableStateOf(0) }
+
+    LaunchedEffect(perSecondIncrement) {
+        while (true) {
+            kotlinx.coroutines.delay(1000)
+            count += perSecondIncrement
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -115,10 +129,29 @@ fun ClickerGame() {
                     count = count,
                     upgradeCost = upgradeCost,
                     ClickerShopLevel = ClickerShopLevel,
+                    perSecondIncrement = perSecondIncrement,
+                    perSecondCost1 = perSecondCost1,
+                    perSecondCost10 = perSecondCost10,
+                    perSecondCost100 = perSecondCost100,
                     onUpgrade = { newIncrement, newCount, newUpgradeCost ->
                         increment = newIncrement
                         count = newCount
                         upgradeCost = newUpgradeCost
+                    },
+                    onUpgradePerSecond1 = { newPerSecondIncrement, newCount, newPerSecondCost1 ->
+                        perSecondIncrement = newPerSecondIncrement
+                        count = newCount
+                        perSecondCost1 = newPerSecondCost1
+                    },
+                    onUpgradePerSecond10 = { newPerSecondIncrement, newCount, newPerSecondCost10 ->
+                        perSecondIncrement = newPerSecondIncrement
+                        count = newCount
+                        perSecondCost10 = newPerSecondCost10
+                    },
+                    onUpgradePerSecond100 = { newPerSecondIncrement, newCount, newPerSecondCost100 ->
+                        perSecondIncrement = newPerSecondIncrement
+                        count = newCount
+                        perSecondCost100 = newPerSecondCost100
                     }
                 )
             }
@@ -173,8 +206,8 @@ fun ShopButtonModern(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(width = 180.dp, height = 50.dp)
-            .border(1.dp, Color.Gray)
-            .background(Color.White)
+            .background(color = Color(0xFFEFEFEF), shape = RoundedCornerShape(12.dp)) // gris très clair et coins arrondis
+            .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(4.dp),
         contentAlignment = Alignment.Center

@@ -65,7 +65,8 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
             1 -> {
                 Column(
                     modifier = ClickerShopModifier.fillMaxHeight()
-                        .padding(top = 8.dp),
+                        .padding(top = 8.dp)
+                        .padding(bottom = 8.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -100,7 +101,8 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
             }
             else -> {Column(
                 modifier = ClickerShopModifier.fillMaxHeight()
-                    .padding(top = 8.dp),
+                    .padding(top = 8.dp)
+                    .padding(bottom = 8.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

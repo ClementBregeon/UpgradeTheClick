@@ -3,6 +3,8 @@ package com.clement.upgradetheclick
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,8 +28,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ClickerGame() {
-    var count by remember { mutableIntStateOf(100000) }
+    var count by remember { mutableIntStateOf(0) }
     var increment by remember { mutableIntStateOf(1) }
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
@@ -55,11 +60,32 @@ fun ClickerGame() {
     var squareLevel by remember { mutableStateOf(0) }
     var GraphicShopLevel by remember { mutableStateOf(0) }
     var ClickerShopLevel by remember { mutableStateOf(0) }
+    var shopButtonsUpgraded by remember { mutableStateOf(false) }
+    var counterLevel by remember { mutableStateOf(0) }
+    val displayedCount = remember { Animatable(count.toFloat()) }
 
-    LaunchedEffect(perSecondIncrement) {
+    LaunchedEffect(perSecondIncrement, counterLevel) {
         while (true) {
-            kotlinx.coroutines.delay(1000)
-            count += perSecondIncrement
+            if (counterLevel >= 1) {
+                val tickGain = perSecondIncrement / 10f
+                count += tickGain.toInt()
+                displayedCount.snapTo(displayedCount.value + tickGain)
+                delay(100L)
+            } else {
+                delay(1000L)
+                count += perSecondIncrement
+            }
+        }
+    }
+
+    LaunchedEffect(count, counterLevel) {
+        if (counterLevel == 0) {
+            displayedCount.animateTo(
+                targetValue = count.toFloat(),
+                animationSpec = tween(150)
+            )
+        } else {
+            displayedCount.snapTo(count.toFloat())
         }
     }
     Box(
@@ -70,11 +96,22 @@ fun ClickerGame() {
             modifier = Modifier.padding(top = 50.dp)
 
         ) {
-            Text(
-                text = "$count",
-                fontSize = 24.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = displayedCount.value.toInt().toString(),
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (counterLevel >= 2) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "(${perSecondIncrement} cps)",
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
             Box(
                 modifier = Modifier
                     .size(300.dp)
@@ -99,28 +136,24 @@ fun ClickerGame() {
 
             Spacer(modifier = Modifier.padding(top = 30.dp))
 
-            Box(
-                modifier = Modifier
-                    .size(width = 200.dp, height = 60.dp)
-                    .border(2.dp, Color.Black)
-                    .clickable { ClickerShopOpen = !ClickerShopOpen
-                               GraphicShopOpen = false},
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Shop Clicker")
-            }
-
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-
-            Box(
-                modifier = Modifier
-                    .size(width = 200.dp, height = 60.dp)
-                    .border(2.dp, Color.Black)
-                    .clickable { GraphicShopOpen = !GraphicShopOpen
-                        ClickerShopOpen = false},
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Shop Graphique")
+            if (shopButtonsUpgraded) {
+                ShopButtonModern("Shop Clicker") {
+                    ClickerShopOpen = !ClickerShopOpen
+                    GraphicShopOpen = false
+                }
+                ShopButtonModern("Shop Graphique") {
+                    GraphicShopOpen = !GraphicShopOpen
+                    ClickerShopOpen = false
+                }
+            } else {
+                ShopButton("Shop Clicker") {
+                    ClickerShopOpen = !ClickerShopOpen
+                    GraphicShopOpen = false
+                }
+                ShopButton("Shop Graphique") {
+                    GraphicShopOpen = !GraphicShopOpen
+                    ClickerShopOpen = false
+                }
             }
 
             if (ClickerShopOpen) {
@@ -163,6 +196,8 @@ fun ClickerGame() {
                     squareLevel = squareLevel,
                     GraphicShopLevel = GraphicShopLevel,
                     ClickerShopLevel = ClickerShopLevel,
+                    shopButtonsUpgraded = shopButtonsUpgraded,
+                    counterLevel = counterLevel,
                     onAlignCenter = { newCount ->
                         alignedCenter = true
                         count = newCount
@@ -179,6 +214,14 @@ fun ClickerGame() {
                     onUpgradeClickerShop = { newCount, newClickerShopLevel ->
                         count = newCount
                         ClickerShopLevel = newClickerShopLevel
+                    },
+                    onUpgradeShopButtons = { newCount ->
+                        count = newCount
+                        shopButtonsUpgraded = true
+                    },
+                    onUpgradeCounter = { newCount, newCounterLevel ->
+                        count = newCount
+                        counterLevel = newCounterLevel
                     })
             }
         }

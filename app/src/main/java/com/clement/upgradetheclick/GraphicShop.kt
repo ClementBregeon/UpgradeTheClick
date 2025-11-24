@@ -3,6 +3,9 @@ package com.clement.upgradetheclick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +29,7 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicS
     val GraphicShopCosts = listOf(2000, 5000)
     val ClickerShopCosts = listOf(1500, 4000)
     val counterCosts = listOf(6000, 8000)
+    val buttons = mutableListOf<@Composable () -> Unit>()
 
     val GraphicShopModifier = when (GraphicShopLevel) {
         0 -> Modifier
@@ -99,55 +103,62 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicS
                 }
             }
             1 -> {
-                Column(
-                    modifier = GraphicShopModifier.fillMaxHeight()
-                        .padding(top = 8.dp)
-                        .padding(bottom = 8.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        if (!alignPurchased) {
+
+                    if (!alignPurchased) {
+                        buttons += {
                             ShopButton("Réaligner : $alignCost") {
                                 if (count >= alignCost) onAlignCenter(count - alignCost)
-                        }
                             }
+                        }
+                    }
 
-                        if (squareLevel < 3) {
+                    if (squareLevel < 3) {
+                        buttons += {
                             val cost = upgradeCosts[squareLevel]
                             ShopButton("Améliorer carré : $cost") {
                                 if (count >= cost) onUpgradeSquare(count - cost, squareLevel + 1)
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
-                        if (GraphicShopCost != null) {
+
+
+                    val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
+                    if (GraphicShopCost != null) {
+                        buttons += {
                             ShopButton("Améliorer menu graphique : $GraphicShopCost") {
-                                if (count >= GraphicShopCost) onUpgradeGraphicShop(count - GraphicShopCost, GraphicShopLevel + 1)
+                                if (count >= GraphicShopCost) onUpgradeGraphicShop(
+                                    count - GraphicShopCost,
+                                    GraphicShopLevel + 1
+                                )
                             }
                         }
+                    }
 
 
-                        val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
-                        if (ClickerShopCost != null) {
+                    val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
+                    if (ClickerShopCost != null) {
+                        buttons += {
                             ShopButton("Améliorer menu clicker : $ClickerShopCost") {
                                 if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        if (!shopButtonsUpgraded) {
+
+
+                    if (!shopButtonsUpgraded) {
+                        buttons += {
                             ShopButton("Améliorer les boutons : $ShopButtonsCost") {
                                 if (count >= ShopButtonsCost) {
                                     onUpgradeShopButtons(count - ShopButtonsCost)
                                 }
                             }
                         }
-                        val CounterCost = counterCosts.getOrNull(counterLevel)
-                        if (CounterCost != null) {
+                    }
+
+
+                    val CounterCost = counterCosts.getOrNull(counterLevel)
+                    if (CounterCost != null) {
+                        buttons += {
                             ShopButton("Améliorer le compteur : $CounterCost") {
                                 if (count >= CounterCost) {
                                     onUpgradeCounter(count - CounterCost, counterLevel + 1)
@@ -155,63 +166,88 @@ fun GraphicShop( count: Int, alignPurchased: Boolean, squareLevel: Int, GraphicS
                             }
                         }
                     }
-                }
-            }
-            else -> {
-                Column(
-                    modifier = GraphicShopModifier.fillMaxHeight()
-                        .padding(top = 8.dp)
-                        .padding(bottom = 8.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        if (!alignPurchased) {
-                            ShopButtonModern("Réaligner : $alignCost") {
-                                if (count >= alignCost) onAlignCenter(count - alignCost)
-                            }
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = GraphicShopModifier
+                    ) {
+                        items(buttons) { btn ->
+                            btn()
                         }
-                        if (squareLevel < 3) {
-                            val cost = upgradeCosts[squareLevel]
-                            ShopButtonModern("Améliorer carré : $cost") {
-                                if (count >= cost) onUpgradeSquare(count - cost, squareLevel + 1)
+                    }
+                }
+            else -> {
+                if (!alignPurchased) {
+                    buttons += {
+                        ShopButtonModern("Réaligner : $alignCost") {
+                            if (count >= alignCost) onAlignCenter(count - alignCost)
+                        }
+                    }
+                }
+
+                if (squareLevel < 3) {
+                    buttons += {
+                        val cost = upgradeCosts[squareLevel]
+                        ShopButtonModern("Améliorer carré : $cost") {
+                            if (count >= cost) onUpgradeSquare(count - cost, squareLevel + 1)
+                        }
+                    }
+                }
+
+
+                val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
+                if (GraphicShopCost != null) {
+                    buttons += {
+                        ShopButtonModern("Améliorer menu graphique : $GraphicShopCost") {
+                            if (count >= GraphicShopCost) onUpgradeGraphicShop(
+                                count - GraphicShopCost,
+                                GraphicShopLevel + 1
+                            )
+                        }
+                    }
+                }
+
+
+                val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
+                if (ClickerShopCost != null) {
+                    buttons += {
+                        ShopButtonModern("Améliorer menu clicker : $ClickerShopCost") {
+                            if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
+                        }
+                    }
+                }
+
+
+                if (!shopButtonsUpgraded) {
+                    buttons += {
+                        ShopButtonModern("Améliorer les boutons : $ShopButtonsCost") {
+                            if (count >= ShopButtonsCost) {
+                                onUpgradeShopButtons(count - ShopButtonsCost)
                             }
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val GraphicShopCost = GraphicShopCosts.getOrNull(GraphicShopLevel)
-                        if (GraphicShopCost != null) {
-                            ShopButtonModern("Améliorer menu graphique : $GraphicShopCost") {
-                                if (count >= GraphicShopCost) onUpgradeGraphicShop(count - GraphicShopCost, GraphicShopLevel + 1)
-                            }
-                        }
 
-                        val ClickerShopCost = ClickerShopCosts.getOrNull(ClickerShopLevel)
-                        if (ClickerShopCost != null) {
-                            ShopButtonModern("Améliorer menu clicker : $ClickerShopCost") {
-                                if (count >= ClickerShopCost) onUpgradeClickerShop(count - ClickerShopCost, ClickerShopLevel + 1)
+                val CounterCost = counterCosts.getOrNull(counterLevel)
+                if (CounterCost != null) {
+                    buttons += {
+                        ShopButtonModern("Améliorer le compteur : $CounterCost") {
+                            if (count >= CounterCost) {
+                                onUpgradeCounter(count - CounterCost, counterLevel + 1)
                             }
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            if (!shopButtonsUpgraded) {
-                                ShopButtonModern("Améliorer les boutons : $ShopButtonsCost") {
-                                    if (count >= ShopButtonsCost) {
-                                        onUpgradeShopButtons(count - ShopButtonsCost)
-                                    }
-                                }
-                            }
-                            val CounterCost = counterCosts.getOrNull(counterLevel)
-                            if (CounterCost != null) {
-                                ShopButtonModern("Améliorer le compteur : $CounterCost") {
-                                    if (count >= CounterCost) {
-                                        onUpgradeCounter(count - CounterCost, counterLevel + 1)
-                                    }
-                                }
-                            }
-                        }
+                    }
+                }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = GraphicShopModifier
+                ) {
+                    items(buttons) { btn ->
+                        btn()
                     }
                 }
             }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ClickerGame() {
-    var count by remember { mutableIntStateOf(0) }
+    var count by remember { mutableIntStateOf(1000000) }
     var increment by remember { mutableIntStateOf(1) }
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
@@ -93,7 +94,8 @@ fun ClickerGame() {
     ) {
         Column(
             horizontalAlignment = if (alignedCenter) Alignment.CenterHorizontally else Alignment.Start,
-            modifier = Modifier.padding(top = 50.dp)
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = 50.dp)
 
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

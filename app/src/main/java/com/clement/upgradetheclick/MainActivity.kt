@@ -1,5 +1,6 @@
 package com.clement.upgradetheclick
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,34 +37,55 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        const val PREFS_NAME = "clicker_prefs"
+        const val KEY_COUNT = "count"
+        const val KEY_CPS = "perSecondIncrement"
+        const val KEY_INCREMENT = "increment"
+        const val KEY_ALIGN_PURCHASED = "alignPurchased"
+        const val KEY_SQUARE_LEVEL = "squareLevel"
+        const val KEY_GRAPHIC_SHOP_LEVEL = "GraphicShopLevel"
+        const val KEY_CLICKER_SHOP_LEVEL = "ClickerShopLevel"
+        const val KEY_SHOP_BUTTONS_UPGRADED = "shopButtonsUpgraded"
+        const val KEY_COUNTER_LEVEL = "counterLevel"
+        const val KEY_UPGRADE_COST = "upgradeCost"
+        const val KEY_PER_SECOND_COST1 = "perSecondCost1"
+        const val KEY_PER_SECOND_COST10 = "perSecondCost10"
+        const val KEY_PER_SECOND_COST100 = "perSecondCost100"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ClickerGame()
+            val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            ClickerGame(prefs)
         }
     }
 }
 
 
 @Composable
-fun ClickerGame() {
-    var count by remember { mutableIntStateOf(1000000) }
-    var increment by remember { mutableIntStateOf(1) }
+fun ClickerGame(prefs: android.content.SharedPreferences) {
+    var count by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_COUNT, 1000000)) }
+    var increment by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_INCREMENT, 1)) }
+    var upgradeCost by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_UPGRADE_COST, 10)) }
+    var perSecondIncrement by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_CPS, 0)) }
+    var perSecondCost1 by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_PER_SECOND_COST1, 50)) }
+    var perSecondCost10 by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_PER_SECOND_COST10, 500)) }
+    var perSecondCost100 by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_PER_SECOND_COST100, 5000)) }
+    var alignedCenter by remember { mutableStateOf(prefs.getBoolean(MainActivity.KEY_ALIGN_PURCHASED, false)) }
+    var alignPurchased by remember { mutableStateOf(prefs.getBoolean(MainActivity.KEY_ALIGN_PURCHASED, false)) }
+    var squareLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_SQUARE_LEVEL, 0)) }
+    var GraphicShopLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, 0)) }
+    var ClickerShopLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, 0)) }
+    var shopButtonsUpgraded by remember { mutableStateOf(prefs.getBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, false)) }
+    var counterLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_COUNTER_LEVEL, 0)) }
+
+    val displayedCount = remember { Animatable(count.toFloat()) }
+
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
-    var upgradeCost by remember { mutableIntStateOf(10) }
-    var perSecondIncrement by remember { mutableIntStateOf(0) }
-    var perSecondCost1 by remember { mutableIntStateOf(50) }
-    var perSecondCost10 by remember { mutableIntStateOf(500) }
-    var perSecondCost100 by remember { mutableIntStateOf(5000) }
-    var alignedCenter by remember { mutableStateOf(false) }
-    var alignPurchased by remember { mutableStateOf(false) }
-    var squareLevel by remember { mutableStateOf(0) }
-    var GraphicShopLevel by remember { mutableStateOf(0) }
-    var ClickerShopLevel by remember { mutableStateOf(0) }
-    var shopButtonsUpgraded by remember { mutableStateOf(false) }
-    var counterLevel by remember { mutableStateOf(0) }
-    val displayedCount = remember { Animatable(count.toFloat()) }
 
     LaunchedEffect(perSecondIncrement, counterLevel) {
         while (true) {
@@ -72,9 +94,11 @@ fun ClickerGame() {
                 count += tickGain.toInt()
                 displayedCount.snapTo(displayedCount.value + tickGain)
                 delay(100L)
+                prefs.edit().putInt(MainActivity.KEY_COUNT, count).apply()
             } else {
                 delay(1000L)
                 count += perSecondIncrement
+                prefs.edit().putInt(MainActivity.KEY_COUNT, count).apply()
             }
         }
     }
@@ -172,21 +196,42 @@ fun ClickerGame() {
                         increment = newIncrement
                         count = newCount
                         upgradeCost = newUpgradeCost
+
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_INCREMENT, newIncrement)
+                            .putInt(MainActivity.KEY_UPGRADE_COST, newUpgradeCost)
+                            .apply()
                     },
                     onUpgradePerSecond1 = { newPerSecondIncrement, newCount, newPerSecondCost1 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
                         perSecondCost1 = newPerSecondCost1
+
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_CPS, newPerSecondIncrement)
+                            .putInt(MainActivity.KEY_PER_SECOND_COST1, newPerSecondCost1)
+                            .apply()
                     },
                     onUpgradePerSecond10 = { newPerSecondIncrement, newCount, newPerSecondCost10 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
                         perSecondCost10 = newPerSecondCost10
+
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_CPS, newPerSecondIncrement)
+                            .putInt(MainActivity.KEY_PER_SECOND_COST10, newPerSecondCost10)
+                            .apply()
                     },
                     onUpgradePerSecond100 = { newPerSecondIncrement, newCount, newPerSecondCost100 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
                         perSecondCost100 = newPerSecondCost100
+
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_CPS, newPerSecondIncrement)
+                            .putInt(MainActivity.KEY_PER_SECOND_COST100, newPerSecondCost100)
+                            .apply()
+
                     }
                 )
             }
@@ -204,26 +249,44 @@ fun ClickerGame() {
                         alignedCenter = true
                         count = newCount
                         alignPurchased = true
+                        prefs.edit()
+                            .putBoolean(MainActivity.KEY_ALIGN_PURCHASED, true)
+                            .apply()
                     },
                     onUpgradeSquare = { newCount, newLevel ->
                         count = newCount
                         squareLevel = newLevel
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_SQUARE_LEVEL, newLevel)
+                            .apply()
                     } ,
                     onUpgradeGraphicShop = { newCount, newGraphicShopLevel ->
                         count = newCount
                         GraphicShopLevel = newGraphicShopLevel
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, newGraphicShopLevel)
+                            .apply()
                     },
                     onUpgradeClickerShop = { newCount, newClickerShopLevel ->
                         count = newCount
                         ClickerShopLevel = newClickerShopLevel
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, newClickerShopLevel)
+                            .apply()
                     },
                     onUpgradeShopButtons = { newCount ->
                         count = newCount
                         shopButtonsUpgraded = true
+                        prefs.edit()
+                            .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, true)
+                            .apply()
                     },
                     onUpgradeCounter = { newCount, newCounterLevel ->
                         count = newCount
                         counterLevel = newCounterLevel
+                        prefs.edit()
+                            .putInt(MainActivity.KEY_COUNTER_LEVEL, newCounterLevel)
+                            .apply()
                     })
             }
         }

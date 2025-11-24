@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
@@ -114,8 +115,83 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
         }
     }
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .statusBarsPadding()
+            .padding(top = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
+        if (shopButtonsUpgraded) {
+            ShopButtonModern("Reset") {
+                // Remise à zéro de toutes les valeurs
+                count = 0
+                increment = 1
+                upgradeCost = 10
+                perSecondIncrement = 0
+                perSecondCost1 = 50
+                perSecondCost10 = 500
+                perSecondCost100 = 5000
+                alignedCenter = false
+                alignPurchased = false
+                squareLevel = 0
+                GraphicShopLevel = 0
+                ClickerShopLevel = 0
+                shopButtonsUpgraded = false
+                counterLevel = 0
+
+                // Sauvegarde immédiate
+                prefs.edit()
+                    .putInt(MainActivity.KEY_COUNT, count)
+                    .putInt(MainActivity.KEY_INCREMENT, increment)
+                    .putInt(MainActivity.KEY_UPGRADE_COST, upgradeCost)
+                    .putInt(MainActivity.KEY_CPS, perSecondIncrement)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST1, perSecondCost1)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST10, perSecondCost10)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST100, perSecondCost100)
+                    .putBoolean(MainActivity.KEY_ALIGN_PURCHASED, alignPurchased)
+                    .putInt(MainActivity.KEY_SQUARE_LEVEL, squareLevel)
+                    .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, GraphicShopLevel)
+                    .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, ClickerShopLevel)
+                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, shopButtonsUpgraded)
+                    .putInt(MainActivity.KEY_COUNTER_LEVEL, counterLevel)
+                    .apply()
+            }
+        } else {
+            ShopButton("Reset") {
+                count = 0
+                increment = 1
+                upgradeCost = 10
+                perSecondIncrement = 0
+                perSecondCost1 = 50
+                perSecondCost10 = 500
+                perSecondCost100 = 5000
+                alignedCenter = false
+                alignPurchased = false
+                squareLevel = 0
+                GraphicShopLevel = 0
+                ClickerShopLevel = 0
+                shopButtonsUpgraded = false
+                counterLevel = 0
+
+                prefs.edit()
+                    .putInt(MainActivity.KEY_COUNT, count)
+                    .putInt(MainActivity.KEY_INCREMENT, increment)
+                    .putInt(MainActivity.KEY_UPGRADE_COST, upgradeCost)
+                    .putInt(MainActivity.KEY_CPS, perSecondIncrement)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST1, perSecondCost1)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST10, perSecondCost10)
+                    .putInt(MainActivity.KEY_PER_SECOND_COST100, perSecondCost100)
+                    .putBoolean(MainActivity.KEY_ALIGN_PURCHASED, alignPurchased)
+                    .putInt(MainActivity.KEY_SQUARE_LEVEL, squareLevel)
+                    .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, GraphicShopLevel)
+                    .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, ClickerShopLevel)
+                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, shopButtonsUpgraded)
+                    .putInt(MainActivity.KEY_COUNTER_LEVEL, counterLevel)
+                    .apply()
+            }
+        }
+
+
+
         Column(
             horizontalAlignment = if (alignedCenter) Alignment.CenterHorizontally else Alignment.Start,
             modifier = Modifier.fillMaxWidth()

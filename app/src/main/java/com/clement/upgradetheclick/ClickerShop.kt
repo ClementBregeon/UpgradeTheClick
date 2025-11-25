@@ -36,25 +36,31 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
     ) {
         when (ClickerShopLevel) {
             0 -> {
+                // Menu niveau 0
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    // Bouton Augmenter l'incrément
                     ShopButton("Augmenter incrément : $upgradeCost") {
                         if (count >= upgradeCost) {
                             onUpgrade(increment + 1, count - upgradeCost, upgradeCost + 1)
                         }
                     }
+                    // Bouton Ajouter 1 par seconde
                     ShopButton("Augmenter l'incrément de 1 par seconde : $perSecondCost1") {
                         if (count >= perSecondCost1) {
                             onUpgradePerSecond1(perSecondIncrement + 1, count - perSecondCost1, perSecondCost1 + 5)
                         }
                     }
+                    // Bouton Ajouter 10 par seconde
                     ShopButton("Augmenter l'incrément de 10 par secondes : $perSecondCost10") {
                         if (count >= perSecondCost10) {
                             onUpgradePerSecond10(perSecondIncrement + 10, count - perSecondCost10, perSecondCost10 + 50)
                         }
                     }
+                    // Bouton Ajouter 100 par seconde
                     ShopButton("Augmenter l'incrément de 100 par secondes : $perSecondCost100") {
                         if (count >= perSecondCost100) {
                             onUpgradePerSecond100(perSecondIncrement + 100, count - perSecondCost100, perSecondCost100 + 500)
@@ -63,6 +69,7 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
                 }
             }
             1 -> {
+                // Menu niveau 1
                 Column(
                     modifier = ClickerShopModifier.fillMaxHeight()
                         .padding(top = 8.dp)
@@ -71,11 +78,13 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // Bouton Augmenter l'incrément
                         ShopButton("Augmenter incrément : $upgradeCost") {
                             if (count >= upgradeCost) {
                                 onUpgrade(increment + 1, count - upgradeCost, upgradeCost + 1)
                             }
                         }
+                        // Bouton Ajouter 1 par seconde
                         ShopButton("Augmenter l'incrément de 1 par seconde : $perSecondCost1") {
                             if (count >= perSecondCost1) {
                                 onUpgradePerSecond1(perSecondIncrement + 1, count - perSecondCost1, perSecondCost1 + 5)
@@ -84,11 +93,13 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // Bouton Ajouter 10 par seconde
                         ShopButton("Augmenter l'incrément de 10 par secondes : $perSecondCost10") {
                             if (count >= perSecondCost10) {
                                 onUpgradePerSecond10(perSecondIncrement + 10, count - perSecondCost10, perSecondCost10 + 50)
                             }
                         }
+                        // Bouton Ajouter 100 par seconde
                         ShopButton("Augmenter l'incrément de 100 par secondes : $perSecondCost100") {
                             if (count >= perSecondCost100) {
                                 onUpgradePerSecond100(perSecondIncrement + 100, count - perSecondCost100, perSecondCost100 + 500)
@@ -99,40 +110,47 @@ fun ClickerShop(onUpgrade: (newIncrement: Int, newCount: Int, newupgradeCost: In
 
                 }
             }
-            else -> {Column(
-                modifier = ClickerShopModifier.fillMaxHeight()
-                    .padding(top = 8.dp)
-                    .padding(bottom = 8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ShopButtonModern("Augmenter incrément : $upgradeCost") {
-                        if (count >= upgradeCost) {
-                            onUpgrade(increment + 1, count - upgradeCost, upgradeCost + 1)
+            else ->
+                // Menu niveau 2
+                {
+                    Column(
+                    modifier = ClickerShopModifier.fillMaxHeight()
+                        .padding(top = 8.dp)
+                        .padding(bottom = 8.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally)
+                    {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // Bouton Augmenter l'incrément
+                        ShopButtonModern("Augmenter incrément : $upgradeCost") {
+                            if (count >= upgradeCost) {
+                                onUpgrade(increment + 1, count - upgradeCost, upgradeCost + 1)
+                            }
                         }
-                    }
-                    ShopButtonModern("Augmenter l'incrément de 1 par seconde : $perSecondCost1") {
-                        if (count >= perSecondCost1) {
-                            onUpgradePerSecond1(perSecondIncrement + 1, count - perSecondCost1, perSecondCost1 + 5)
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ShopButtonModern("Augmenter l'incrément de 10 par secondes : $perSecondCost10") {
-                        if (count >= perSecondCost10) {
-                            onUpgradePerSecond10(perSecondIncrement + 10, count - perSecondCost10, perSecondCost10 + 50)
-                        }
-                    }
-                    ShopButtonModern("Augmenter l'incrément de 100 par secondes : $perSecondCost100") {
-                        if (count >= perSecondCost100) {
-                            onUpgradePerSecond100(perSecondIncrement + 100, count - perSecondCost100, perSecondCost100 + 500)
-                        }
-                    }
-                }
-            }
 
+                        // Bouton Ajouter 1 par seconde
+                        ShopButtonModern("Ajout de 1 par seconde : $perSecondCost1") {
+                            if (count >= perSecondCost1) {
+                                onUpgradePerSecond1(perSecondIncrement + 1, count - perSecondCost1, perSecondCost1 + 5)
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // Bouton Ajouter 10 par seconde
+                        ShopButtonModern("Ajout de 10 par secondes : $perSecondCost10") {
+                            if (count >= perSecondCost10) {
+                                onUpgradePerSecond10(perSecondIncrement + 10, count - perSecondCost10, perSecondCost10 + 50)
+                            }
+                        }
+                        // Bouton Ajouter 100 par seconde
+                        ShopButtonModern("Ajout de 100 par secondes : $perSecondCost100") {
+                            if (count >= perSecondCost100) {
+                                onUpgradePerSecond100(perSecondIncrement + 100, count - perSecondCost100, perSecondCost100 + 500)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

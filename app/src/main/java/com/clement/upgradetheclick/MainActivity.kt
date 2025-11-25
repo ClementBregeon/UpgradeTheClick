@@ -38,7 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
-
+    //Nom des valeurs sauvegardées
     companion object {
         const val PREFS_NAME = "clicker_prefs"
         const val KEY_COUNT = "count"
@@ -48,14 +48,14 @@ class MainActivity : ComponentActivity() {
         const val KEY_SQUARE_LEVEL = "squareLevel"
         const val KEY_GRAPHIC_SHOP_LEVEL = "GraphicShopLevel"
         const val KEY_CLICKER_SHOP_LEVEL = "ClickerShopLevel"
-        const val KEY_SHOP_BUTTONS_UPGRADED = "shopButtonsUpgraded"
+        const val KEY_SHOP_BUTTONS_UPGRADED = "mainButtonsUpgraded"
         const val KEY_COUNTER_LEVEL = "counterLevel"
         const val KEY_UPGRADE_COST = "upgradeCost"
         const val KEY_PER_SECOND_COST1 = "perSecondCost1"
         const val KEY_PER_SECOND_COST10 = "perSecondCost10"
         const val KEY_PER_SECOND_COST100 = "perSecondCost100"
     }
-
+    // Chargement des valeurs sauvegardées et lancement de l'app
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -68,7 +68,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ClickerGame(prefs: android.content.SharedPreferences) {
-    var count by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_COUNT, 1000000)) }
+    //Mise des valeurs sauvegardées dans les variables en mémoire
+    var count by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_COUNT, 0)) }
     var increment by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_INCREMENT, 1)) }
     var upgradeCost by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_UPGRADE_COST, 10)) }
     var perSecondIncrement by remember { mutableIntStateOf(prefs.getInt(MainActivity.KEY_CPS, 0)) }
@@ -80,7 +81,7 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
     var squareLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_SQUARE_LEVEL, 0)) }
     var GraphicShopLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, 0)) }
     var ClickerShopLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, 0)) }
-    var shopButtonsUpgraded by remember { mutableStateOf(prefs.getBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, false)) }
+    var mainButtonsUpgraded by remember { mutableStateOf(prefs.getBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, false)) }
     var counterLevel by remember { mutableStateOf(prefs.getInt(MainActivity.KEY_COUNTER_LEVEL, 0)) }
 
     val displayedCount = remember { Animatable(count.toFloat()) }
@@ -88,22 +89,25 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
     var ClickerShopOpen by remember { mutableStateOf(false) }
     var GraphicShopOpen by remember { mutableStateOf(false) }
 
+    //Compteur qui s'actualise en contenu
     LaunchedEffect(perSecondIncrement, counterLevel) {
         while (true) {
             if (counterLevel >= 1) {
+                //Compteur fluide
                 val tickGain = perSecondIncrement / 10f
                 count += tickGain.toInt()
                 displayedCount.snapTo(displayedCount.value + tickGain)
                 delay(100L)
                 prefs.edit().putInt(MainActivity.KEY_COUNT, count).apply()
             } else {
+                //Compteur pas fluide
                 delay(1000L)
                 count += perSecondIncrement
                 prefs.edit().putInt(MainActivity.KEY_COUNT, count).apply()
             }
         }
     }
-
+    //Rend le compteur plus fluide
     LaunchedEffect(count, counterLevel) {
         if (counterLevel == 0) {
             displayedCount.animateTo(
@@ -120,7 +124,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
             .padding(top = 16.dp)
             .padding(bottom = 16.dp)
     ) {
-        if (shopButtonsUpgraded) {
+
+        if (mainButtonsUpgraded) {
             ShopButtonModern("Reset") {
                 // Remise à zéro de toutes les valeurs
                 count = 0
@@ -135,10 +140,10 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                 squareLevel = 0
                 GraphicShopLevel = 0
                 ClickerShopLevel = 0
-                shopButtonsUpgraded = false
+                mainButtonsUpgraded = false
                 counterLevel = 0
 
-                // Sauvegarde immédiate
+                // Sauvegarde
                 prefs.edit()
                     .putInt(MainActivity.KEY_COUNT, count)
                     .putInt(MainActivity.KEY_INCREMENT, increment)
@@ -151,12 +156,13 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                     .putInt(MainActivity.KEY_SQUARE_LEVEL, squareLevel)
                     .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, GraphicShopLevel)
                     .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, ClickerShopLevel)
-                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, shopButtonsUpgraded)
+                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, mainButtonsUpgraded)
                     .putInt(MainActivity.KEY_COUNTER_LEVEL, counterLevel)
                     .apply()
             }
         } else {
             ShopButton("Reset") {
+                // Remise à zéro de toutes les valeurs
                 count = 0
                 increment = 1
                 upgradeCost = 10
@@ -169,9 +175,10 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                 squareLevel = 0
                 GraphicShopLevel = 0
                 ClickerShopLevel = 0
-                shopButtonsUpgraded = false
+                mainButtonsUpgraded = false
                 counterLevel = 0
 
+                // Sauvegarde
                 prefs.edit()
                     .putInt(MainActivity.KEY_COUNT, count)
                     .putInt(MainActivity.KEY_INCREMENT, increment)
@@ -184,7 +191,7 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                     .putInt(MainActivity.KEY_SQUARE_LEVEL, squareLevel)
                     .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, GraphicShopLevel)
                     .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, ClickerShopLevel)
-                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, shopButtonsUpgraded)
+                    .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, mainButtonsUpgraded)
                     .putInt(MainActivity.KEY_COUNTER_LEVEL, counterLevel)
                     .apply()
             }
@@ -204,11 +211,11 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                     fontSize = 24.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-
+                //Affichage des Cps
                 if (counterLevel >= 2) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "(${perSecondIncrement} cps)",
+                        text = "(${perSecondIncrement} Cps)",
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
@@ -220,6 +227,7 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                     .clickable { count += increment },
                 contentAlignment = Alignment.Center
             ) {
+                // Affichage du carré à cliquer
                 when (squareLevel) {
                     0 -> Box(modifier = Modifier.fillMaxSize().border(3.dp, Color.Black).background(Color.White))
                     1 -> Box(modifier = Modifier.fillMaxSize().border(3.dp, Color.Black).background(Color.Yellow))
@@ -238,7 +246,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
 
             Spacer(modifier = Modifier.padding(top = 30.dp))
 
-            if (shopButtonsUpgraded) {
+            // Boutons des shops
+            if (mainButtonsUpgraded) {
                 ShopButtonModern("Shop Clicker") {
                     ClickerShopOpen = !ClickerShopOpen
                     GraphicShopOpen = false
@@ -257,17 +266,19 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                     ClickerShopOpen = false
                 }
             }
-
+            //
             if (ClickerShopOpen) {
                 ClickerShop(
-                    increment = increment,
-                    count = count,
-                    upgradeCost = upgradeCost,
-                    ClickerShopLevel = ClickerShopLevel,
-                    perSecondIncrement = perSecondIncrement,
-                    perSecondCost1 = perSecondCost1,
-                    perSecondCost10 = perSecondCost10,
-                    perSecondCost100 = perSecondCost100,
+                    increment = increment,                      // Valeur ajoutée par clic
+                    count = count,                              // Nombre de cookies
+                    upgradeCost = upgradeCost,                  // Prix d'amélioration du clic
+                    ClickerShopLevel = ClickerShopLevel,        // Niveau graphique du shop
+                    perSecondIncrement = perSecondIncrement,    // Nombre de Cps
+                    perSecondCost1 = perSecondCost1,            // Prix de l'amélioration de +1 Cps
+                    perSecondCost10 = perSecondCost10,          // Prix de l'amélioration de +10 Cps
+                    perSecondCost100 = perSecondCost100,        // Prix de l'amélioration de +100 Cps
+
+                    // On améliore le clic
                     onUpgrade = { newIncrement, newCount, newUpgradeCost ->
                         increment = newIncrement
                         count = newCount
@@ -278,6 +289,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putInt(MainActivity.KEY_UPGRADE_COST, newUpgradeCost)
                             .apply()
                     },
+
+                    // On améliore de 1 le Cps
                     onUpgradePerSecond1 = { newPerSecondIncrement, newCount, newPerSecondCost1 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
@@ -288,6 +301,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putInt(MainActivity.KEY_PER_SECOND_COST1, newPerSecondCost1)
                             .apply()
                     },
+
+                    // On améliore de 10 le Cps
                     onUpgradePerSecond10 = { newPerSecondIncrement, newCount, newPerSecondCost10 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
@@ -298,6 +313,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putInt(MainActivity.KEY_PER_SECOND_COST10, newPerSecondCost10)
                             .apply()
                     },
+
+                    // On améliore de 100 le Cps
                     onUpgradePerSecond100 = { newPerSecondIncrement, newCount, newPerSecondCost100 ->
                         perSecondIncrement = newPerSecondIncrement
                         count = newCount
@@ -314,13 +331,15 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
 
             if (GraphicShopOpen) {
                 GraphicShop(
-                    count = count,
-                    alignPurchased = alignPurchased,
-                    squareLevel = squareLevel,
-                    GraphicShopLevel = GraphicShopLevel,
-                    ClickerShopLevel = ClickerShopLevel,
-                    shopButtonsUpgraded = shopButtonsUpgraded,
-                    counterLevel = counterLevel,
+                    count = count,                                  // Nombre de cookies
+                    alignPurchased = alignPurchased,                // Alignement acheté ?
+                    squareLevel = squareLevel,                      // Niveau du carré/cookie cliquable
+                    GraphicShopLevel = GraphicShopLevel,            // Niveau du shop graphique
+                    ClickerShopLevel = ClickerShopLevel,            // Niveau du shop clicker
+                    mainButtonsUpgraded = mainButtonsUpgraded,      // Niveau des boutons principaux
+                    counterLevel = counterLevel,                    // Niveau du compteur
+
+                    // On met au centre les éléments principaux
                     onAlignCenter = { newCount ->
                         alignedCenter = true
                         count = newCount
@@ -329,6 +348,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putBoolean(MainActivity.KEY_ALIGN_PURCHASED, true)
                             .apply()
                     },
+
+                    // On améliore le carré/cookie cliquable
                     onUpgradeSquare = { newCount, newLevel ->
                         count = newCount
                         squareLevel = newLevel
@@ -336,6 +357,8 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putInt(MainActivity.KEY_SQUARE_LEVEL, newLevel)
                             .apply()
                     } ,
+
+                    // On améliore le shop graphique
                     onUpgradeGraphicShop = { newCount, newGraphicShopLevel ->
                         count = newCount
                         GraphicShopLevel = newGraphicShopLevel
@@ -343,20 +366,26 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
                             .putInt(MainActivity.KEY_GRAPHIC_SHOP_LEVEL, newGraphicShopLevel)
                             .apply()
                     },
+
+                    // On améliore le shop clicker
                     onUpgradeClickerShop = { newCount, newClickerShopLevel ->
                         count = newCount
                         ClickerShopLevel = newClickerShopLevel
                         prefs.edit()
-                            .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, newClickerShopLevel)
+                             .putInt(MainActivity.KEY_CLICKER_SHOP_LEVEL, newClickerShopLevel)
                             .apply()
                     },
+
+                    // On améliore les boutons principaux
                     onUpgradeShopButtons = { newCount ->
                         count = newCount
-                        shopButtonsUpgraded = true
+                        mainButtonsUpgraded = true
                         prefs.edit()
                             .putBoolean(MainActivity.KEY_SHOP_BUTTONS_UPGRADED, true)
                             .apply()
                     },
+
+                    // On améliore le compteur
                     onUpgradeCounter = { newCount, newCounterLevel ->
                         count = newCount
                         counterLevel = newCounterLevel
@@ -372,6 +401,7 @@ fun ClickerGame(prefs: android.content.SharedPreferences) {
 
 
 @Composable
+// Bouton moins joli
 fun ShopButton(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
@@ -386,6 +416,7 @@ fun ShopButton(text: String, onClick: () -> Unit) {
 }
 
 @Composable
+// Bouton plus joli
 fun ShopButtonModern(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
